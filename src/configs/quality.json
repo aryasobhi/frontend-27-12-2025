@@ -1,0 +1,33 @@
+﻿{
+  "id": "quality",
+  "title": "کنترل کیفیت",
+  "subtitle": "مدیریت بازرسی‌ها و استانداردهای کیفی",
+  "iconName": "ClipboardCheck",
+  "primaryAction": { "label": "بازرسی جدید", "iconName": "ClipboardCheck" },
+  "filters": [
+    { "id": "batch", "type": "text", "label": "شماره سری ساخت", "placeholder": "BATCH-..." },
+    { "id": "product", "type": "text", "label": "محصول", "placeholder": "جستجوی محصول..." },
+    { "id": "status", "type": "select", "label": "وضعیت", "options": [
+      { "label": "پاس شده", "value": "passed" },
+      { "label": "رد شده", "value": "failed" },
+      { "label": "در انتظار", "value": "pending" }
+    ]}
+  ],
+  "columns": [
+    { "key": "batch", "label": "سری ساخت", "type": "text" },
+    { "key": "product", "label": "محصول", "type": "text" },
+    { "key": "date", "label": "تاریخ", "type": "text" },
+    { "key": "inspector", "label": "بازرس", "type": "text" },
+    { "key": "score", "label": "امتیاز کیفی", "type": "badge" },
+    { "key": "issues", "label": "تعداد خطا", "type": "badge" },
+    { "key": "result", "label": "وضعیت", "type": "badge" }
+  ],
+  "formFields": [
+    { "id": "batch", "label": "شماره سری", "type": "text" },
+    { "id": "product", "label": "محصول", "type": "select" },
+    { "id": "inspector", "label": "بازرس", "type": "text" },
+    { "id": "score", "label": "امتیاز (۰-۱۰۰)", "type": "number" },
+    { "id": "result", "label": "نتیجه نهایی", "type": "select" },
+    { "id": "issues", "label": "شرح موارد مشاهده شده", "type": "textarea" }
+  ]
+}

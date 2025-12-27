@@ -1,0 +1,36 @@
+{
+  "id": "production",
+  "title": "مدیریت تولید",
+  "subtitle": "کنترل خطوط تولید و سفارشات",
+  "iconName": "Factory",
+  "primaryAction": {
+    "label": "ثبت دستور تولید",
+    "iconName": "Play"
+  },
+  "filters": [
+    {
+      "id": "status",
+      "type": "select",
+      "label": "وضعیت",
+      "options": [
+        { "label": "در حال انجام", "value": "in-progress" },
+        { "label": "تکمیل شده", "value": "completed" }
+      ]
+    }
+  ],
+  "columns": [
+    { "key": "orderNumber", "label": "شماره سفارش", "type": "text" },
+    { "key": "product", "label": "محصول", "type": "text" },
+    { "key": "quantity", "label": "تعداد", "type": "text" },
+    { "key": "line", "label": "خط تولید", "type": "text" },
+    { "key": "progress", "label": "پیشرفت", "type": "progress" },
+    { "key": "status", "label": "وضعیت", "type": "badge" }
+  ],
+  "formFields": [
+    { "id": "orderNumber", "label": "شماره سفارش", "type": "text", "colSpan": 1 },
+    { "id": "product", "label": "محصول", "type": "text", "colSpan": 1 },
+    { "id": "quantity", "label": "تعداد", "type": "number", "colSpan": 1 },
+    { "id": "unit", "label": "واحد", "type": "text", "colSpan": 1 },
+    { "id": "line", "label": "خط تولید", "type": "select", "colSpan": 2 }
+  ]
+}

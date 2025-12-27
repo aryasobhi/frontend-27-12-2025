@@ -1,0 +1,29 @@
+﻿{
+  "id": "sales",
+  "title": "مدیریت فروش",
+  "subtitle": "چرخه کامل سفارشات فروش و خروج کالا",
+  "iconName": "ShoppingCart",
+  "primaryAction": { "label": "ثبت سفارش جدید", "iconName": "Plus" },
+  "filters": [
+    { "id": "soNumber", "type": "text", "label": "شماره سفارش", "placeholder": "SO-..." },
+    { "id": "customer", "type": "text", "label": "مشتری", "placeholder": "نام مشتری..." },
+    { "id": "status", "type": "select", "label": "وضعیت سفارش", "options": [
+      { "label": "پیش‌نویس", "value": "draft" },
+      { "label": "تایید شده", "value": "confirmed" },
+      { "label": "ارسال شده", "value": "delivered" },
+      { "label": "فاکتور شده", "value": "invoiced" }
+    ]}
+  ],
+  "columns": [
+    { "key": "soNumber", "label": "شماره سفارش", "type": "text" },
+    { "key": "customer", "label": "مشتری", "type": "text" },
+    { "key": "totalAmount", "label": "مبلغ کل", "type": "currency" },
+    { "key": "orderDate", "label": "تاریخ ثبت", "type": "text" },
+    { "key": "status", "label": "وضعیت", "type": "badge" }
+  ],
+  "formFields": [
+    { "id": "customer", "label": "انتخاب مشتری", "type": "select" },
+    { "id": "orderDate", "label": "تاریخ سفارش", "type": "date" },
+    { "id": "notes", "label": "توضیحات", "type": "textarea" }
+  ]
+}

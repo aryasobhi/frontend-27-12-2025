@@ -1,0 +1,10 @@
+﻿{
+  "id": "machines",
+  "title": "machines",
+  "subtitle": "Module description for machines",
+  "iconName": "Layout",
+  "primaryAction": { "label": "New Record", "iconName": "Plus" },
+  "filters": [],
+  "columns": [],
+  "formFields": []
+}

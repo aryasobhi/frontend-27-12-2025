@@ -1,0 +1,32 @@
+﻿{
+  "id": "finance",
+  "title": "امور مالی",
+  "subtitle": "مدیریت حسابداری، درآمدها و هزینه‌ها",
+  "iconName": "DollarSign",
+  "primaryAction": { "label": "سند جدید", "iconName": "FileText" },
+  "filters": [
+    { "id": "invoiceNumber", "type": "text", "label": "شماره فاکتور", "placeholder": "INV-..." },
+    { "id": "customer", "type": "text", "label": "طرف حساب", "placeholder": "جستجوی مشتری..." },
+    { "id": "status", "type": "select", "label": "وضعیت پرداخت", "options": [
+      { "label": "پرداخت شده", "value": "paid" },
+      { "label": "در انتظار", "value": "pending" },
+      { "label": "معوقه", "value": "overdue" }
+    ]}
+  ],
+  "columns": [
+    { "key": "invoiceNumber", "label": "شماره فاکتور", "type": "text" },
+    { "key": "customer", "label": "مشتری", "type": "text" },
+    { "key": "amount", "label": "مبلغ کل", "type": "currency" },
+    { "key": "date", "label": "تاریخ صدور", "type": "text" },
+    { "key": "dueDate", "label": "تاریخ سررسید", "type": "text" },
+    { "key": "status", "label": "وضعیت", "type": "badge" }
+  ],
+  "formFields": [
+    { "id": "invoiceNumber", "label": "شماره فاکتور", "type": "text" },
+    { "id": "customer", "label": "مشتری/همکار", "type": "select" },
+    { "id": "amount", "label": "مبلغ (تومان)", "type": "number" },
+    { "id": "date", "label": "تاریخ", "type": "date" },
+    { "id": "dueDate", "label": "سررسید", "type": "date" },
+    { "id": "status", "label": "وضعیت اولیه", "type": "select" }
+  ]
+}

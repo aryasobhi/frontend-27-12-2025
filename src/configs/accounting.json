@@ -1,0 +1,10 @@
+﻿{
+  "id": "accounting",
+  "title": "accounting",
+  "subtitle": "Module description for accounting",
+  "iconName": "Layout",
+  "primaryAction": { "label": "New Record", "iconName": "Plus" },
+  "filters": [],
+  "columns": [],
+  "formFields": []
+}

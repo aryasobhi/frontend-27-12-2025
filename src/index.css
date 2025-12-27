@@ -1,0 +1,118 @@
+@import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   RTL Base Layer
+   ============================================ */
+@layer base {
+  html {
+    direction: rtl;
+    font-family: 'Vazirmatn', system-ui, sans-serif;
+    /* Base font-size aligned with dashboard sizing (16px) for consistency */
+    font-size: 16px;
+  }
+
+  body {
+    @apply bg-damask text-rosary antialiased;
+    direction: rtl;
+    text-align: right;
+  }
+
+  /* Persian numeral support */
+  input[type="number"] {
+    font-feature-settings: "ss02" on;
+  }
+
+  /* Fix icon flip for RTL */
+  [dir="rtl"] .icon-flip {
+    transform: scaleX(-1);
+  }
+}
+
+/*
+  Design tokens: typography scale (aligned with Dashboard)
+  - Use CSS variables so Tailwind font-size scale can reference them.
+  - These variables are the single source of truth for font-sizes across the app.
+*/
+:root {
+  /* body / base */
+  --text-base: 1rem; /* 16px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-xs: 0.75rem; /* 12px */
+
+  /* headings */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+
+  /* metrics / KPI */
+  --text-kpi: 2rem; /* 32px */
+
+  /* line-heights */
+  --leading-normal: 1.5;
+  --leading-tight: 1.2;
+}
+
+/* Semantic utility classes for the typography system */
+@layer components {
+  .type-body { font-size: var(--text-base); line-height: var(--leading-normal); }
+  .type-caption { font-size: var(--text-sm); line-height: var(--leading-normal); opacity: .9 }
+  .type-heading { font-size: var(--text-xl); line-height: var(--leading-tight); font-weight: 700 }
+  .type-kpi { font-size: var(--text-kpi); line-height: var(--leading-tight); font-weight: 700 }
+}
+
+/* ============================================
+   RTL Utilities
+   ============================================ */
+@layer utilities {
+  /* Start/End margin/padding utilities for RTL */
+  .ms-auto {
+    margin-inline-start: auto;
+  }
+  .me-auto {
+    margin-inline-end: auto;
+  }
+  
+  /* Flex gap with RTL awareness */
+  .gap-rtl-2 {
+    gap: 0.5rem;
+  }
+  
+  /* Text alignment RTL */
+  .text-start {
+    text-align: start;
+  }
+  .text-end {
+    text-align: end;
+  }
+
+  /* Direction override */
+  .dir-ltr {
+    direction: ltr;
+  }
+  .dir-rtl {
+    direction: rtl;
+  }
+}
+
+/* ============================================
+   Chart Theming for Dark Mode
+   ============================================ */
+.recharts-cartesian-axis-tick-value {
+  fill: #EBE0C2 !important;
+  font-family: 'Vazirmatn', sans-serif !important;
+  font-size: 12px !important;
+}
+
+.recharts-cartesian-grid line {
+  stroke: rgba(255, 255, 255, 0.1) !important;
+}
+
+.recharts-tooltip-wrapper {
+  direction: rtl !important;
+}
+

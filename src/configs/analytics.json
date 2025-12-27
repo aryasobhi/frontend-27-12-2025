@@ -1,0 +1,10 @@
+﻿{
+  "id": "analytics",
+  "title": "analytics",
+  "subtitle": "Module description for analytics",
+  "iconName": "Layout",
+  "primaryAction": { "label": "New Record", "iconName": "Plus" },
+  "filters": [],
+  "columns": [],
+  "formFields": []
+}

@@ -1,0 +1,44 @@
+{
+  "id": "purchasing",
+  "title": "خرید و تدارکات",
+  "subtitle": "مدیریت زنجیره تامین و خریج",
+  "iconName": "ShoppingBag",
+  "primaryAction": {
+    "label": "سفارش خرید جدید",
+    "iconName": "Plus"
+  },
+  "filters": [
+    {
+      "id": "supplier",
+      "type": "select",
+      "label": "تامین‌کننده",
+      "options": [
+        { "label": "صنایع پک‌پرو", "value": "s1" },
+        { "label": "فولاد البرز", "value": "s2" }
+      ]
+    },
+    {
+      "id": "status",
+      "type": "select",
+      "label": "وضعیت",
+      "options": [
+        { "label": "پیش‌نویس", "value": "draft" },
+        { "label": "تایید شده", "value": "approved" },
+        { "label": "دریافت شده", "value": "received" }
+      ]
+    }
+  ],
+  "columns": [
+    { "key": "poNumber", "label": "شماره سفارش", "type": "text" },
+    { "key": "supplier", "label": "تامین‌کننده", "type": "text" },
+    { "key": "orderDate", "label": "تاریخ سفارش", "type": "text" },
+    { "key": "totalAmount", "label": "مبلغ کل", "type": "currency" },
+    { "key": "status", "label": "وضعیت", "type": "badge" }
+  ],
+  "formFields": [
+    { "id": "supplier", "label": "تامین‌کننده", "type": "select", "colSpan": 1 },
+    { "id": "orderNumber", "label": "شماره سفارش", "type": "text", "colSpan": 1 },
+    { "id": "totalAmount", "label": "مبلغ کل", "type": "number", "colSpan": 1 },
+    { "id": "status", "label": "وضعیت", "type": "select", "colSpan": 1 }
+  ]
+}

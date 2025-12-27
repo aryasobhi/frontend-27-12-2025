@@ -1,0 +1,10 @@
+﻿{
+  "id": "shipping",
+  "title": "shipping",
+  "subtitle": "Module description for shipping",
+  "iconName": "Layout",
+  "primaryAction": { "label": "New Record", "iconName": "Plus" },
+  "filters": [],
+  "columns": [],
+  "formFields": []
+}

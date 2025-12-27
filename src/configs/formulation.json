@@ -1,0 +1,10 @@
+﻿{
+  "id": "formulation",
+  "title": "formulation",
+  "subtitle": "Module description for formulation",
+  "iconName": "Layout",
+  "primaryAction": { "label": "New Record", "iconName": "Plus" },
+  "filters": [],
+  "columns": [],
+  "formFields": []
+}

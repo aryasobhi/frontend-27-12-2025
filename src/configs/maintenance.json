@@ -1,0 +1,49 @@
+{
+  "id": "maintenance",
+  "title": "تعمیر و نگهداری",
+  "subtitle": "مدیریت تجهیزات و دستور کارهای فنی",
+  "iconName": "Wrench",
+  "primaryAction": {
+    "label": "ثبت دستور کار",
+    "iconName": "Calendar"
+  },
+  "filters": [
+    {
+      "id": "status",
+      "type": "select",
+      "label": "وضعیت",
+      "options": [
+        { "label": "زمان‌بندی شده", "value": "scheduled" },
+        { "label": "در حال انجام", "value": "in-progress" },
+        { "label": "تکمیل شده", "value": "completed" },
+        { "label": "معوق", "value": "overdue" }
+      ]
+    },
+    {
+      "id": "priority",
+      "type": "select",
+      "label": "اولویت",
+      "options": [
+        { "label": "بحرانی", "value": "critical" },
+        { "label": "بالا", "value": "high" },
+        { "label": "متوسط", "value": "medium" },
+        { "label": "پایین", "value": "low" }
+      ]
+    }
+  ],
+  "columns": [
+    { "key": "taskNumber", "label": "شماره دستور کار", "type": "text" },
+    { "key": "equipment", "label": "تجهیزات", "type": "text" },
+    { "key": "type", "label": "نوع", "type": "badge" },
+    { "key": "priority", "label": "اولویت", "type": "badge" },
+    { "key": "status", "label": "وضعیت", "type": "badge" },
+    { "key": "cost", "label": "هزینه", "type": "currency" }
+  ],
+  "formFields": [
+    { "id": "equipment", "label": "تجهیزات", "type": "text", "colSpan": 1 },
+    { "id": "type", "label": "نوع", "type": "select", "colSpan": 1 },
+    { "id": "priority", "label": "اولویت", "type": "select", "colSpan": 1 },
+    { "id": "technician", "label": "تکنیسین", "type": "text", "colSpan": 1 },
+    { "id": "details", "label": "جزئیات", "type": "textarea", "colSpan": 2 }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "id": "crm",
+  "title": "مدیریت ارتباط با مشتریان",
+  "subtitle": "پیگیری سرنخ‌ها و مدیریت مشتریان",
+  "iconName": "UserPlus",
+  "primaryAction": {
+    "label": "سرنخ جدید",
+    "iconName": "Plus"
+  },
+  "views": {
+    "leads": {
+      "id": "leads",
+      "title": "سرنخ‌های فروش",
+      "subtitle": "مدیریت فرصت‌های جدید",
+      "iconName": "UserPlus",
+      "primaryAction": { "label": "سرنخ جدید", "iconName": "Plus" },
+      "filters": [
+        { "id": "status", "type": "select", "label": "وضعیت", "options": [
+          { "label": "جدید", "value": "new" },
+          { "label": "تماس گرفته شده", "value": "contacted" },
+          { "label": "واجد شرایط", "value": "qualified" }
+        ]},
+        { "id": "source", "type": "select", "label": "منبع", "options": [
+          { "label": "وب‌سایت", "value": "Website" },
+          { "label": "معرفی", "value": "Referral" }
+        ]}
+      ],
+      "columns": [
+        { "key": "name", "label": "نام سرنخ", "type": "text" },
+        { "key": "company", "label": "نام شرکت", "type": "text" },
+        { "key": "value", "label": "ارزش برآوردی", "type": "currency" },
+        { "key": "displayStatus", "label": "مرحله", "type": "badge" },
+        { "key": "date", "label": "تاریخ", "type": "text" }
+      ],
+      "formFields": [
+        { "id": "name", "label": "نام سرنخ", "type": "text", "colSpan": 1 },
+        { "id": "company", "label": "نام شرکت", "type": "text", "colSpan": 1 },
+        { "id": "email", "label": "ایمیل", "type": "text", "colSpan": 1 },
+        { "id": "phone", "label": "تلفن", "type": "text", "colSpan": 1 },
+        { "id": "value", "label": "ارزش", "type": "number", "colSpan": 1 },
+        { "id": "source", "label": "منبع", "type": "select", "colSpan": 1 },
+        { "id": "notes", "label": "یادداشت‌ها", "type": "textarea", "colSpan": 2 }
+      ]
+    },
+    "customers": {
+      "id": "customers",
+      "title": "بانک مشتریان",
+      "iconName": "Target",
+      "primaryAction": { "label": "مشتری جدید", "iconName": "Plus" },
+      "filters": [
+        { "id": "segment", "type": "select", "label": "بخش", "options": [
+          { "label": "سازمانی", "value": "enterprise" },
+          { "label": "متوسط", "value": "mid-market" }
+        ]}
+      ],
+      "columns": [
+        { "key": "name", "label": "نام مشتری", "type": "text" },
+        { "key": "totalOrders", "label": "سفارشات", "type": "text" },
+        { "key": "totalRevenue", "label": "درآمد کل", "type": "currency" },
+        { "key": "displayStatus", "label": "وضعیت", "type": "badge" }
+      ],
+      "formFields": [
+        { "id": "name", "label": "نام مشتری", "type": "text", "colSpan": 2 },
+        { "id": "segment", "label": "بخش بازار", "type": "select", "colSpan": 1 },
+        { "id": "status", "label": "وضعیت", "type": "select", "colSpan": 1 },
+        { "id": "address", "label": "آدرس دفتر مرکزی", "type": "textarea", "colSpan": 2 }
+      ]
+    }
+  }
+}

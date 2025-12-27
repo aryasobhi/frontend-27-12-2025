@@ -1,0 +1,10 @@
+﻿{
+  "id": "procurement",
+  "title": "procurement",
+  "subtitle": "Module description for procurement",
+  "iconName": "Layout",
+  "primaryAction": { "label": "New Record", "iconName": "Plus" },
+  "filters": [],
+  "columns": [],
+  "formFields": []
+}

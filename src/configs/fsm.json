@@ -1,0 +1,10 @@
+﻿{
+  "id": "fsm",
+  "title": "fsm",
+  "subtitle": "Module description for fsm",
+  "iconName": "Layout",
+  "primaryAction": { "label": "New Record", "iconName": "Plus" },
+  "filters": [],
+  "columns": [],
+  "formFields": []
+}

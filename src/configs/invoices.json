@@ -1,0 +1,10 @@
+﻿{
+  "id": "invoices",
+  "title": "invoices",
+  "subtitle": "Module description for invoices",
+  "iconName": "Layout",
+  "primaryAction": { "label": "New Record", "iconName": "Plus" },
+  "filters": [],
+  "columns": [],
+  "formFields": []
+}

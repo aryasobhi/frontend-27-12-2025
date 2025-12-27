@@ -1,0 +1,30 @@
+﻿{
+  "id": "supply-chain",
+  "title": "مدیریت زنجیره تامین",
+  "subtitle": "رهگیری محموله‌ها، تامین‌کنندگان و عملکرد لجستیک",
+  "iconName": "Truck",
+  "primaryAction": { "label": "محموله جدید", "iconName": "Plus" },
+  "filters": [
+    { "id": "trackingNumber", "type": "text", "label": "شماره رهگیری", "placeholder": "جستجو..." },
+    { "id": "status", "type": "select", "label": "وضعیت", "options": [
+      { "label": "در حال حمل", "value": "in-transit" },
+      { "label": "تحویل شده", "value": "delivered" },
+      { "label": "تاخیر", "value": "delayed" },
+      { "label": "در انتظار", "value": "pending" }
+    ]}
+  ],
+  "columns": [
+    { "key": "trackingNumber", "label": "شماره رهگیری", "type": "badge" },
+    { "key": "supplier", "label": "تامین‌کننده", "type": "text" },
+    { "key": "items", "label": "اقلام", "type": "text" },
+    { "key": "status", "label": "وضعیت", "type": "badge" },
+    { "key": "estimatedArrival", "label": "وصول تخمینی", "type": "date" }
+  ],
+  "formFields": [
+    { "id": "trackingNumber", "label": "شماره رهگیری", "type": "text" },
+    { "id": "supplier", "label": "تامین‌کننده", "type": "select" },
+    { "id": "items", "label": "شرح اقلام", "type": "textarea" },
+    { "id": "quantity", "label": "مقدار", "type": "number" },
+    { "id": "estimatedArrival", "label": "تاریخ وصول", "type": "date" }
+  ]
+}

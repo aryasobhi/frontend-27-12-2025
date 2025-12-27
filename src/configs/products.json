@@ -1,0 +1,10 @@
+﻿{
+  "id": "products",
+  "title": "products",
+  "subtitle": "Module description for products",
+  "iconName": "Layout",
+  "primaryAction": { "label": "New Record", "iconName": "Plus" },
+  "filters": [],
+  "columns": [],
+  "formFields": []
+}

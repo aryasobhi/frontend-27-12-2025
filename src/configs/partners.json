@@ -1,0 +1,10 @@
+﻿{
+  "id": "partners",
+  "title": "partners",
+  "subtitle": "Module description for partners",
+  "iconName": "Layout",
+  "primaryAction": { "label": "New Record", "iconName": "Plus" },
+  "filters": [],
+  "columns": [],
+  "formFields": []
+}

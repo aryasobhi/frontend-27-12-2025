@@ -1,0 +1,35 @@
+﻿{
+  "id": "hr",
+  "title": "منابع انسانی",
+  "subtitle": "مدیریت کارکنان، حضور و غیاب و حقوق",
+  "iconName": "Users",
+  "primaryAction": { "label": "افزودن کارمند", "iconName": "UserPlus" },
+  "filters": [
+    { "id": "name", "type": "text", "label": "نام کارمند", "placeholder": "جستجوی نام..." },
+    { "id": "department", "type": "select", "label": "بخش", "options": [
+      { "label": "تولید", "value": "production" },
+      { "label": "کنترل کیفیت", "value": "qc" },
+      { "label": "فروش", "value": "sales" }
+    ]},
+    { "id": "status", "type": "select", "label": "وضعیت فعلی", "options": [
+      { "label": "فعال", "value": "active" },
+      { "label": "مرخصی", "value": "on-leave" },
+      { "label": "پایان همکاری", "value": "terminated" }
+    ]}
+  ],
+  "columns": [
+    { "key": "name", "label": "نام و نام خانوادگی", "type": "text" },
+    { "key": "department", "label": "واحد سازمانی", "type": "badge" },
+    { "key": "position", "label": "سمت", "type": "text" },
+    { "key": "hireDate", "label": "تاریخ استخدام", "type": "text" },
+    { "key": "status", "label": "وضعیت", "type": "badge" }
+  ],
+  "formFields": [
+    { "id": "name", "label": "نام کامل", "type": "text" },
+    { "id": "email", "label": "ایمیل سازمانی", "type": "text" },
+    { "id": "department", "label": "بخش مربوطه", "type": "select" },
+    { "id": "position", "label": "عنوان شغلی", "type": "text" },
+    { "id": "salary", "label": "حقوق پایه (تومان)", "type": "number" },
+    { "id": "hireDate", "label": "تاریخ شروع", "type": "date" }
+  ]
+}

@@ -1,0 +1,31 @@
+﻿{
+  "id": "projects",
+  "title": "مدیریت پروژه‌ها",
+  "subtitle": "رهگیری پیشرفت، بودجه و وظایف پروژه‌ها",
+  "iconName": "Briefcase",
+  "primaryAction": { "label": "پروژه جدید", "iconName": "Plus" },
+  "filters": [
+    { "id": "name", "type": "text", "label": "نام پروژه", "placeholder": "جستجو..." },
+    { "id": "status", "type": "select", "label": "وضعیت", "options": [
+      { "label": "فعال", "value": "active" },
+      { "label": "برنامه‌ریزی", "value": "planning" },
+      { "label": "متوقف شده", "value": "on-hold" },
+      { "label": "تکمیل شده", "value": "completed" }
+    ]}
+  ],
+  "columns": [
+    { "key": "name", "label": "پروژه", "type": "text" },
+    { "key": "type", "label": "نوع", "type": "badge" },
+    { "key": "status", "label": "وضعیت", "type": "badge" },
+    { "key": "progress", "label": "پیشرفت", "type": "progress" },
+    { "key": "budget", "label": "بودجه کل", "type": "currency" }
+  ],
+  "formFields": [
+    { "id": "name", "label": "نام پروژه", "type": "text" },
+    { "id": "code", "label": "کد فنی", "type": "text" },
+    { "id": "type", "label": "نوع پروژه", "type": "select" },
+    { "id": "budget", "label": "بودجه", "type": "number" },
+    { "id": "startDate", "label": "تاریخ شروع", "type": "date" },
+    { "id": "endDate", "label": "تاریخ پایان", "type": "date" }
+  ]
+}

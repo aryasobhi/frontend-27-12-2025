@@ -1,0 +1,28 @@
+﻿{
+  "id": "bom",
+  "title": "ساختار محصول (BOM)",
+  "subtitle": "مدیریت فرمولاسیون و مواد اولیه محصولات",
+  "iconName": "Layers",
+  "primaryAction": { "label": "ایجاد ساختار جدید", "iconName": "Plus" },
+  "filters": [
+    { "id": "productName", "type": "text", "label": "نام محصول", "placeholder": "جستجوی محصول..." },
+    { "id": "status", "type": "select", "label": "وضعیت", "options": [
+      { "label": "فعال", "value": "active" },
+      { "label": "پیش‌نویس", "value": "draft" },
+      { "label": "منسوخ", "value": "obsolete" }
+    ]}
+  ],
+  "columns": [
+    { "key": "productName", "label": "نام محصول", "type": "text" },
+    { "key": "productCode", "label": "کد فنی", "type": "text" },
+    { "key": "version", "label": "نسخه", "type": "badge" },
+    { "key": "totalCost", "label": "هزینه کل", "type": "currency" },
+    { "key": "status", "label": "وضعیت", "type": "badge" }
+  ],
+  "formFields": [
+    { "id": "productName", "label": "نام محصول", "type": "text" },
+    { "id": "productCode", "label": "کد محصول", "type": "text" },
+    { "id": "version", "label": "نسخه", "type": "text" },
+    { "id": "yield", "label": "میزان بازدهی در واحد", "type": "number" }
+  ]
+}

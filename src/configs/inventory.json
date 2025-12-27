@@ -1,0 +1,39 @@
+{
+  "id": "inventory",
+  "title": "مدیریت انبار",
+  "subtitle": "کنترل موجودی و رهگیری کالا",
+  "iconName": "Package",
+  "primaryAction": {
+    "label": "افزودن کالا",
+    "iconName": "Plus"
+  },
+  "filters": [
+    {
+      "id": "category",
+      "type": "select",
+      "label": "دسته بندی",
+      "options": [
+        { "label": "مواد اولیه", "value": "Raw Materials" },
+        { "label": "بسته‌بندی", "value": "Packaging" },
+        { "label": "کالای نهایی", "value": "Finished Goods" }
+      ]
+    }
+  ],
+  "columns": [
+    { "key": "name", "label": "نام کالا", "type": "text" },
+    { "key": "sku", "label": "شناسه کالا", "type": "text" },
+    { "key": "category", "label": "دسته بندی", "type": "badge" },
+    { "key": "location", "label": "محل انبار", "type": "text" },
+    { "key": "quantity", "label": "تعداد/مقدار", "type": "text" },
+    { "key": "status", "label": "وضعیت", "type": "badge" }
+  ],
+  "formFields": [
+    { "id": "sku", "label": "شناسه کالا", "type": "text", "colSpan": 1 },
+    { "id": "name", "label": "نام کالا", "type": "text", "colSpan": 1 },
+    { "id": "category", "label": "دسته بندی", "type": "select", "colSpan": 1 },
+    { "id": "unit", "label": "واحد شمارش", "type": "text", "colSpan": 1 },
+    { "id": "quantity", "label": "تعداد", "type": "number", "colSpan": 1 },
+    { "id": "reorderLevel", "label": "نقطه سفارش", "type": "number", "colSpan": 1 },
+    { "id": "description", "label": "توضیحات تکمیلی", "type": "textarea", "colSpan": 2 }
+  ]
+}
