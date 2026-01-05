@@ -17,8 +17,11 @@
     /* Strict Mode - Disabled as requested */
     "strict": false,
     
-    /* No path aliases yet */
-    "baseUrl": "."
+    /* Path aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "build", "dist"]

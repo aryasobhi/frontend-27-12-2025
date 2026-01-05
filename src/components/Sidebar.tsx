@@ -5,6 +5,9 @@ import {
   FileText, BookOpen, Beaker, FolderKanban, Languages, Layout
 } from 'lucide-react';
 import { Button } from '../ui/button';
+import BackendService from '../api/services';
+import pkg from '../../package.json';
+import { useEffect, useState } from 'react';
 import { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -35,10 +38,10 @@ export function Sidebar({ activeView, setActiveView }: SidebarProps) {
     {
       title: 'Overview',
       titleKey: 'section.overview',
-      items: [
+        items: [
         { id: 'dashboard', label: 'Dashboard', labelKey: 'nav.dashboard', icon: LayoutDashboard },
         { id: 'analytics', label: 'Analytics', labelKey: 'nav.analytics', icon: BarChart3 },
-        { id: 'builder', label: 'Module Builder', labelKey: 'nav.builder', icon: Settings },
+        { id: 'admin', label: 'Admin Control', labelKey: 'nav.admin', icon: Settings },
       ]
     },
     {
@@ -198,6 +201,8 @@ export function Sidebar({ activeView, setActiveView }: SidebarProps) {
                   {language === 'en' ? 'Admin User' : 'کاربر مدیر'}
                 </div>
                 <div className="text-xs text-rosary/50 truncate">admin@foodpro.com</div>
+                <div className="text-xs text-rosary/50 truncate">App v{pkg.version}</div>
+                <VersionBadge />
               </div>
             )}
           </div>
@@ -205,4 +210,23 @@ export function Sidebar({ activeView, setActiveView }: SidebarProps) {
       </div>
     </aside>
   );
+}
+
+function VersionBadge() {
+  const [engine, setEngine] = useState<string | null>(null);
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const p = await BackendService.ping();
+        if (!mounted) return;
+        setEngine(p?.version || (p && JSON.stringify(p)) || 'unknown');
+      } catch (e) {
+        if (!mounted) return;
+        setEngine('offline');
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+  return <div className="text-xs text-rosary/50 truncate">Engine: {engine}</div>;
 }

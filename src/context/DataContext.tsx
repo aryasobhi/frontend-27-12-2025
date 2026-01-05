@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-import dataAdapter from '../lib/adapters/dataAdapter';
+import BackendService from '../api/services';
+import { toast } from 'sonner';
 import {
   Partner,
   Product,
@@ -145,9 +146,15 @@ interface DataContextType {
   addBOM: (bom: Omit<BOM, 'id'>) => void;
   updateBOM: (id: string, bom: Partial<BOM>) => void;
   deleteBOM: (id: string) => void;
+  // Sync / connection status
+  isSyncing: boolean;
+  lastSyncTime: string | null;
+  connectionError: string | null;
+  fetchInitialData: () => Promise<boolean>;
+  commitChanges: (entityId: string, delta: any) => Promise<any>;
 }
 
-const DataContext = createContext<DataContextType | undefined>(undefined);
+export const DataContext = createContext<DataContextType | undefined>(undefined);
 
 import { initialPartners } from '../data/mockPartners';
 
@@ -201,6 +208,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [formulations, setFormulations] = useState<Formulation[]>([]);
   const [boms, setBOMs] = useState<BOM[]>([]);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   // Partner CRUD
   const addPartner = (partner: Omit<Partner, 'id' | 'totalOrders' | 'revenue' | 'rating'>) => {
@@ -211,25 +221,48 @@ export function DataProvider({ children }: { children: ReactNode }) {
       revenue: 0,
       rating: 0,
     };
+    const prev = partners;
     setPartners([...partners, newPartner]);
-    // persist via adapter (async) — optimistic update
-    dataAdapter.addPartner(newPartner).then(res => {
-      if (!res.ok) console.warn('[dataAdapter] addPartner failed', res);
-    }).catch(e => console.warn('[dataAdapter] addPartner error', e));
+    (async () => {
+      try {
+        await BackendService.create('partners', newPartner);
+      } catch (err: any) {
+        setPartners(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Add partner failed';
+        setConnectionError(m.toString());
+        toast.error(m.toString());
+      }
+    })();
   };
 
   const updatePartner = (id: string, updatedData: Partial<Partner>) => {
+    const prev = partners;
     setPartners(partners.map(p => p.id === id ? { ...p, ...updatedData } : p));
-    dataAdapter.updatePartner(id, updatedData as Partial<Partner>).then(res => {
-      if (!res.ok) console.warn('[dataAdapter] updatePartner failed', res);
-    }).catch(e => console.warn('[dataAdapter] updatePartner error', e));
+    (async () => {
+      try {
+        await BackendService.update('partners', id, updatedData);
+      } catch (err: any) {
+        setPartners(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Update partner failed';
+        setConnectionError(m.toString());
+        toast.error(m.toString());
+      }
+    })();
   };
 
   const deletePartner = (id: string) => {
+    const prev = partners;
     setPartners(partners.filter(p => p.id !== id));
-    dataAdapter.deletePartner(id).then(res => {
-      if (!res.ok) console.warn('[dataAdapter] deletePartner failed', res);
-    }).catch(e => console.warn('[dataAdapter] deletePartner error', e));
+    (async () => {
+      try {
+        await BackendService.remove('partners', id);
+      } catch (err: any) {
+        setPartners(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Delete partner failed';
+        setConnectionError(m.toString());
+        toast.error(m.toString());
+      }
+    })();
   };
 
   // Product CRUD
@@ -238,24 +271,48 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...product,
       id: Date.now().toString(),
     };
+    const prev = products;
     setProducts([...products, newProduct]);
-    dataAdapter.addProduct(newProduct).then(res => {
-      if (!res.ok) console.warn('[dataAdapter] addProduct failed', res);
-    }).catch(e => console.warn('[dataAdapter] addProduct error', e));
+    (async () => {
+      try {
+        await BackendService.create('products', newProduct);
+      } catch (err: any) {
+        setProducts(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Add product failed';
+        setConnectionError(m.toString());
+        toast.error(m.toString());
+      }
+    })();
   };
 
   const updateProduct = (id: string, updatedData: Partial<Product>) => {
+    const prev = products;
     setProducts(products.map(p => p.id === id ? { ...p, ...updatedData } : p));
-    dataAdapter.updateProduct(id, updatedData as Partial<Product>).then(res => {
-      if (!res.ok) console.warn('[dataAdapter] updateProduct failed', res);
-    }).catch(e => console.warn('[dataAdapter] updateProduct error', e));
+    (async () => {
+      try {
+        await BackendService.update('products', id, updatedData);
+      } catch (err: any) {
+        setProducts(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Update product failed';
+        setConnectionError(m.toString());
+        toast.error(m.toString());
+      }
+    })();
   };
 
   const deleteProduct = (id: string) => {
+    const prev = products;
     setProducts(products.filter(p => p.id !== id));
-    dataAdapter.deleteProduct(id).then(res => {
-      if (!res.ok) console.warn('[dataAdapter] deleteProduct failed', res);
-    }).catch(e => console.warn('[dataAdapter] deleteProduct error', e));
+    (async () => {
+      try {
+        await BackendService.remove('products', id);
+      } catch (err: any) {
+        setProducts(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Delete product failed';
+        setConnectionError(m.toString());
+        toast.error(m.toString());
+      }
+    })();
   };
 
   // Order CRUD
@@ -264,18 +321,48 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...order,
       id: Date.now().toString(),
     };
+    const prev = orders;
     setOrders([...orders, newOrder]);
-    dataAdapter.addOrder(newOrder).then(res => { if (!res.ok) console.warn('[dataAdapter] addOrder failed', res); }).catch(e => console.warn('[dataAdapter] addOrder error', e));
+    (async () => {
+      try {
+        await BackendService.create('orders', newOrder);
+      } catch (err: any) {
+        setOrders(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Add order failed';
+        setConnectionError(m.toString());
+        toast.error(m.toString());
+      }
+    })();
   };
 
   const updateOrder = (id: string, updatedData: Partial<Order>) => {
+    const prev = orders;
     setOrders(orders.map(o => o.id === id ? { ...o, ...updatedData } : o));
-    dataAdapter.updateOrder(id, updatedData as Partial<Order>).catch(e => console.warn('[dataAdapter] updateOrder error', e));
+    (async () => {
+      try {
+        await BackendService.update('orders', id, updatedData);
+      } catch (err: any) {
+        setOrders(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Update order failed';
+        setConnectionError(m.toString());
+        toast.error(m.toString());
+      }
+    })();
   };
 
   const deleteOrder = (id: string) => {
+    const prev = orders;
     setOrders(orders.filter(o => o.id !== id));
-    dataAdapter.deleteOrder(id).catch(e => console.warn('[dataAdapter] deleteOrder error', e));
+    (async () => {
+      try {
+        await BackendService.remove('orders', id);
+      } catch (err: any) {
+        setOrders(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Delete order failed';
+        setConnectionError(m.toString());
+        toast.error(m.toString());
+      }
+    })();
   };
 
   // Inventory CRUD
@@ -284,18 +371,24 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...item,
       id: Date.now().toString(),
     };
+    const prev = inventory;
     setInventory([...inventory, newItem]);
-    dataAdapter.addInventoryItem(newItem).then(res => { if (!res.ok) console.warn('[dataAdapter] addInventoryItem failed', res); }).catch(e => console.warn('[dataAdapter] addInventoryItem error', e));
+    (async () => {
+      try { await BackendService.create('inventory', newItem); } catch (err: any) { setInventory(prev); const m = (err && (err.serverMessage || err.message)) || 'Add inventory failed'; setConnectionError(m.toString()); toast.error(m.toString()); }
+    })();
+
   };
 
   const updateInventoryItem = (id: string, updatedData: Partial<InventoryItem>) => {
+    const prev = inventory;
     setInventory(inventory.map(i => i.id === id ? { ...i, ...updatedData } : i));
-    dataAdapter.updateInventoryItem(id, updatedData as Partial<InventoryItem>).catch(e => console.warn('[dataAdapter] updateInventoryItem error', e));
+    (async () => { try { await BackendService.update('inventory', id, updatedData); } catch (err: any) { setInventory(prev); const m = (err && (err.serverMessage || err.message)) || 'Update inventory failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const deleteInventoryItem = (id: string) => {
+    const prev = inventory;
     setInventory(inventory.filter(i => i.id !== id));
-    dataAdapter.deleteInventoryItem(id).catch(e => console.warn('[dataAdapter] deleteInventoryItem error', e));
+    (async () => { try { await BackendService.remove('inventory', id); } catch (err: any) { setInventory(prev); const m = (err && (err.serverMessage || err.message)) || 'Delete inventory failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   // Purchase Order CRUD
@@ -304,18 +397,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...po,
       id: Date.now().toString(),
     };
+    const prev = purchaseOrders;
     setPurchaseOrders([...purchaseOrders, newPO]);
-    dataAdapter.addPurchaseOrder(newPO).then(res => { if (!res.ok) console.warn('[dataAdapter] addPurchaseOrder failed', res); }).catch(e => console.warn('[dataAdapter] addPurchaseOrder error', e));
+    (async () => { try { await BackendService.create('purchase-orders', newPO); } catch (err: any) { setPurchaseOrders(prev); const m = (err && (err.serverMessage || err.message)) || 'Add purchase order failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const updatePurchaseOrder = (id: string, updatedData: Partial<PurchaseOrder>) => {
+    const prev = purchaseOrders;
     setPurchaseOrders(purchaseOrders.map(po => po.id === id ? { ...po, ...updatedData } : po));
-    dataAdapter.updatePurchaseOrder(id, updatedData as Partial<PurchaseOrder>).catch(e => console.warn('[dataAdapter] updatePurchaseOrder error', e));
+    (async () => { try { await BackendService.update('purchase-orders', id, updatedData); } catch (err: any) { setPurchaseOrders(prev); const m = (err && (err.serverMessage || err.message)) || 'Update purchase order failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const deletePurchaseOrder = (id: string) => {
+    const prev = purchaseOrders;
     setPurchaseOrders(purchaseOrders.filter(po => po.id !== id));
-    dataAdapter.deletePurchaseOrder(id).catch(e => console.warn('[dataAdapter] deletePurchaseOrder error', e));
+    (async () => { try { await BackendService.remove('purchase-orders', id); } catch (err: any) { setPurchaseOrders(prev); const m = (err && (err.serverMessage || err.message)) || 'Delete purchase order failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   // Sales Order CRUD
@@ -324,18 +420,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...so,
       id: Date.now().toString(),
     };
+    const prev = salesOrders;
     setSalesOrders([...salesOrders, newSO]);
-    dataAdapter.addSalesOrder(newSO).then(res => { if (!res.ok) console.warn('[dataAdapter] addSalesOrder failed', res); }).catch(e => console.warn('[dataAdapter] addSalesOrder error', e));
+    (async () => { try { await BackendService.create('sales-orders', newSO); } catch (err: any) { setSalesOrders(prev); const m = (err && (err.serverMessage || err.message)) || 'Add sales order failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const updateSalesOrder = (id: string, updatedData: Partial<SalesOrder>) => {
+    const prev = salesOrders;
     setSalesOrders(salesOrders.map(so => so.id === id ? { ...so, ...updatedData } : so));
-    dataAdapter.updateSalesOrder(id, updatedData as Partial<SalesOrder>).catch(e => console.warn('[dataAdapter] updateSalesOrder error', e));
+    (async () => { try { await BackendService.update('sales-orders', id, updatedData); } catch (err: any) { setSalesOrders(prev); const m = (err && (err.serverMessage || err.message)) || 'Update sales order failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const deleteSalesOrder = (id: string) => {
+    const prev = salesOrders;
     setSalesOrders(salesOrders.filter(so => so.id !== id));
-    dataAdapter.deleteSalesOrder(id).catch(e => console.warn('[dataAdapter] deleteSalesOrder error', e));
+    (async () => { try { await BackendService.remove('sales-orders', id); } catch (err: any) { setSalesOrders(prev); const m = (err && (err.serverMessage || err.message)) || 'Delete sales order failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   // Machine CRUD
@@ -344,18 +443,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...machine,
       id: Date.now().toString(),
     };
+    const prev = machines;
     setMachines([...machines, newMachine]);
-    dataAdapter.addMachine(newMachine).then(res => { if (!res.ok) console.warn('[dataAdapter] addMachine failed', res); }).catch(e => console.warn('[dataAdapter] addMachine error', e));
+    (async () => { try { await BackendService.create('machines', newMachine); } catch (err: any) { setMachines(prev); const m = (err && (err.serverMessage || err.message)) || 'Add machine failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const updateMachine = (id: string, updatedData: Partial<Machine>) => {
+    const prev = machines;
     setMachines(machines.map(m => m.id === id ? { ...m, ...updatedData } : m));
-    dataAdapter.updateMachine(id, updatedData as Partial<Machine>).catch(e => console.warn('[dataAdapter] updateMachine error', e));
+    (async () => { try { await BackendService.update('machines', id, updatedData); } catch (err: any) { setMachines(prev); const m = (err && (err.serverMessage || err.message)) || 'Update machine failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const deleteMachine = (id: string) => {
+    const prev = machines;
     setMachines(machines.filter(m => m.id !== id));
-    dataAdapter.deleteMachine(id).catch(e => console.warn('[dataAdapter] deleteMachine error', e));
+    (async () => { try { await BackendService.remove('machines', id); } catch (err: any) { setMachines(prev); const m = (err && (err.serverMessage || err.message)) || 'Delete machine failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   // Customer CRUD
@@ -367,18 +469,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       totalSpent: 0,
       lastOrder: '',
     };
+    const prev = customers;
     setCustomers([...customers, newCustomer]);
-    dataAdapter.addCustomer(newCustomer).then(res => { if (!res.ok) console.warn('[dataAdapter] addCustomer failed', res); }).catch(e => console.warn('[dataAdapter] addCustomer error', e));
+    (async () => { try { await BackendService.create('customers', newCustomer); } catch (err: any) { setCustomers(prev); const m = (err && (err.serverMessage || err.message)) || 'Add customer failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const updateCustomer = (id: string, updatedData: Partial<Customer>) => {
+    const prev = customers;
     setCustomers(customers.map(c => c.id === id ? { ...c, ...updatedData } : c));
-    dataAdapter.updateCustomer(id, updatedData as Partial<Customer>).catch(e => console.warn('[dataAdapter] updateCustomer error', e));
+    (async () => { try { await BackendService.update('customers', id, updatedData); } catch (err: any) { setCustomers(prev); const m = (err && (err.serverMessage || err.message)) || 'Update customer failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const deleteCustomer = (id: string) => {
+    const prev = customers;
     setCustomers(customers.filter(c => c.id !== id));
-    dataAdapter.deleteCustomer(id).catch(e => console.warn('[dataAdapter] deleteCustomer error', e));
+    (async () => { try { await BackendService.remove('customers', id); } catch (err: any) { setCustomers(prev); const m = (err && (err.serverMessage || err.message)) || 'Delete customer failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   // Supplier CRUD
@@ -388,18 +493,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       id: Date.now().toString(),
       totalPurchases: 0,
     };
+    const prev = suppliers;
     setSuppliers([...suppliers, newSupplier]);
-    dataAdapter.addSupplier(newSupplier).then(res => { if (!res.ok) console.warn('[dataAdapter] addSupplier failed', res); }).catch(e => console.warn('[dataAdapter] addSupplier error', e));
+    (async () => { try { await BackendService.create('suppliers', newSupplier); } catch (err: any) { setSuppliers(prev); const m = (err && (err.serverMessage || err.message)) || 'Add supplier failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const updateSupplier = (id: string, updatedData: Partial<Supplier>) => {
+    const prev = suppliers;
     setSuppliers(suppliers.map(s => s.id === id ? { ...s, ...updatedData } : s));
-    dataAdapter.updateSupplier(id, updatedData as Partial<Supplier>).catch(e => console.warn('[dataAdapter] updateSupplier error', e));
+    (async () => { try { await BackendService.update('suppliers', id, updatedData); } catch (err: any) { setSuppliers(prev); const m = (err && (err.serverMessage || err.message)) || 'Update supplier failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const deleteSupplier = (id: string) => {
+    const prev = suppliers;
     setSuppliers(suppliers.filter(s => s.id !== id));
-    dataAdapter.deleteSupplier(id).catch(e => console.warn('[dataAdapter] deleteSupplier error', e));
+    (async () => { try { await BackendService.remove('suppliers', id); } catch (err: any) { setSuppliers(prev); const m = (err && (err.serverMessage || err.message)) || 'Delete supplier failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   // Employee CRUD
@@ -408,18 +516,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...employee,
       id: Date.now().toString(),
     };
+    const prev = employees;
     setEmployees([...employees, newEmployee]);
-    dataAdapter.addEmployee(newEmployee).then(res => { if (!res.ok) console.warn('[dataAdapter] addEmployee failed', res); }).catch(e => console.warn('[dataAdapter] addEmployee error', e));
+    (async () => { try { await BackendService.create('employees', newEmployee); } catch (err: any) { setEmployees(prev); const m = (err && (err.serverMessage || err.message)) || 'Add employee failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const updateEmployee = (id: string, updatedData: Partial<Employee>) => {
+    const prev = employees;
     setEmployees(employees.map(e => e.id === id ? { ...e, ...updatedData } : e));
-    dataAdapter.updateEmployee(id, updatedData as Partial<Employee>).catch(e => console.warn('[dataAdapter] updateEmployee error', e));
+    (async () => { try { await BackendService.update('employees', id, updatedData); } catch (err: any) { setEmployees(prev); const m = (err && (err.serverMessage || err.message)) || 'Update employee failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const deleteEmployee = (id: string) => {
+    const prev = employees;
     setEmployees(employees.filter(e => e.id !== id));
-    dataAdapter.deleteEmployee(id).catch(e => console.warn('[dataAdapter] deleteEmployee error', e));
+    (async () => { try { await BackendService.remove('employees', id); } catch (err: any) { setEmployees(prev); const m = (err && (err.serverMessage || err.message)) || 'Delete employee failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   // Production Order CRUD
@@ -428,18 +539,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...order,
       id: Date.now().toString(),
     };
+    const prev = productionOrders;
     setProductionOrders([...productionOrders, newOrder]);
-    dataAdapter.addProductionOrder(newOrder).then(res => { if (!res.ok) console.warn('[dataAdapter] addProductionOrder failed', res); }).catch(e => console.warn('[dataAdapter] addProductionOrder error', e));
+    (async () => { try { await BackendService.create('production-orders', newOrder); } catch (err: any) { setProductionOrders(prev); const m = (err && (err.serverMessage || err.message)) || 'Add production order failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const updateProductionOrder = (id: string, updatedData: Partial<ProductionOrder>) => {
+    const prev = productionOrders;
     setProductionOrders(productionOrders.map(po => po.id === id ? { ...po, ...updatedData } : po));
-    dataAdapter.updateProductionOrder(id, updatedData as Partial<ProductionOrder>).catch(e => console.warn('[dataAdapter] updateProductionOrder error', e));
+    (async () => { try { await BackendService.update('production-orders', id, updatedData); } catch (err: any) { setProductionOrders(prev); const m = (err && (err.serverMessage || err.message)) || 'Update production order failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const deleteProductionOrder = (id: string) => {
+    const prev = productionOrders;
     setProductionOrders(productionOrders.filter(po => po.id !== id));
-    dataAdapter.deleteProductionOrder(id).catch(e => console.warn('[dataAdapter] deleteProductionOrder error', e));
+    (async () => { try { await BackendService.remove('production-orders', id); } catch (err: any) { setProductionOrders(prev); const m = (err && (err.serverMessage || err.message)) || 'Delete production order failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   // Quality Control CRUD
@@ -448,18 +562,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...qc,
       id: Date.now().toString(),
     };
+    const prev = qualityControls;
     setQualityControls([...qualityControls, newQC]);
-    dataAdapter.addQualityControl(newQC).then(res => { if (!res.ok) console.warn('[dataAdapter] addQualityControl failed', res); }).catch(e => console.warn('[dataAdapter] addQualityControl error', e));
+    (async () => { try { await BackendService.create('quality-controls', newQC); } catch (err: any) { setQualityControls(prev); const m = (err && (err.serverMessage || err.message)) || 'Add quality control failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const updateQualityControl = (id: string, updatedData: Partial<QualityControl>) => {
+    const prev = qualityControls;
     setQualityControls(qualityControls.map(qc => qc.id === id ? { ...qc, ...updatedData } : qc));
-    dataAdapter.updateQualityControl(id, updatedData as Partial<QualityControl>).catch(e => console.warn('[dataAdapter] updateQualityControl error', e));
+    (async () => { try { await BackendService.update('quality-controls', id, updatedData); } catch (err: any) { setQualityControls(prev); const m = (err && (err.serverMessage || err.message)) || 'Update quality control failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const deleteQualityControl = (id: string) => {
+    const prev = qualityControls;
     setQualityControls(qualityControls.filter(qc => qc.id !== id));
-    dataAdapter.deleteQualityControl(id).catch(e => console.warn('[dataAdapter] deleteQualityControl error', e));
+    (async () => { try { await BackendService.remove('quality-controls', id); } catch (err: any) { setQualityControls(prev); const m = (err && (err.serverMessage || err.message)) || 'Delete quality control failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   // Warehouse CRUD
@@ -468,18 +585,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...warehouse,
       id: Date.now().toString(),
     };
+    const prev = warehouses;
     setWarehouses([...warehouses, newWarehouse]);
-    dataAdapter.addWarehouse(newWarehouse).then(res => { if (!res.ok) console.warn('[dataAdapter] addWarehouse failed', res); }).catch(e => console.warn('[dataAdapter] addWarehouse error', e));
+    (async () => { try { await BackendService.create('warehouses', newWarehouse); } catch (err: any) { setWarehouses(prev); const m = (err && (err.serverMessage || err.message)) || 'Add warehouse failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const updateWarehouse = (id: string, updatedData: Partial<Warehouse>) => {
+    const prev = warehouses;
     setWarehouses(warehouses.map(w => w.id === id ? { ...w, ...updatedData } : w));
-    dataAdapter.updateWarehouse(id, updatedData as Partial<Warehouse>).catch(e => console.warn('[dataAdapter] updateWarehouse error', e));
+    (async () => { try { await BackendService.update('warehouses', id, updatedData); } catch (err: any) { setWarehouses(prev); const m = (err && (err.serverMessage || err.message)) || 'Update warehouse failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const deleteWarehouse = (id: string) => {
+    const prev = warehouses;
     setWarehouses(warehouses.filter(w => w.id !== id));
-    dataAdapter.deleteWarehouse(id).catch(e => console.warn('[dataAdapter] deleteWarehouse error', e));
+    (async () => { try { await BackendService.remove('warehouses', id); } catch (err: any) { setWarehouses(prev); const m = (err && (err.serverMessage || err.message)) || 'Delete warehouse failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   // Accounting Entry CRUD
@@ -488,18 +608,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...entry,
       id: Date.now().toString(),
     };
+    const prev = accountingEntries;
     setAccountingEntries([...accountingEntries, newEntry]);
-    dataAdapter.addAccountingEntry(newEntry).then(res => { if (!res.ok) console.warn('[dataAdapter] addAccountingEntry failed', res); }).catch(e => console.warn('[dataAdapter] addAccountingEntry error', e));
+    (async () => { try { await BackendService.create('accounting-entries', newEntry); } catch (err: any) { setAccountingEntries(prev); const m = (err && (err.serverMessage || err.message)) || 'Add accounting entry failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const updateAccountingEntry = (id: string, updatedData: Partial<AccountingEntry>) => {
+    const prev = accountingEntries;
     setAccountingEntries(accountingEntries.map(e => e.id === id ? { ...e, ...updatedData } : e));
-    dataAdapter.updateAccountingEntry(id, updatedData as Partial<AccountingEntry>).catch(e => console.warn('[dataAdapter] updateAccountingEntry error', e));
+    (async () => { try { await BackendService.update('accounting-entries', id, updatedData); } catch (err: any) { setAccountingEntries(prev); const m = (err && (err.serverMessage || err.message)) || 'Update accounting entry failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const deleteAccountingEntry = (id: string) => {
+    const prev = accountingEntries;
     setAccountingEntries(accountingEntries.filter(e => e.id !== id));
-    dataAdapter.deleteAccountingEntry(id).catch(e => console.warn('[dataAdapter] deleteAccountingEntry error', e));
+    (async () => { try { await BackendService.remove('accounting-entries', id); } catch (err: any) { setAccountingEntries(prev); const m = (err && (err.serverMessage || err.message)) || 'Delete accounting entry failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   // Project CRUD
@@ -508,59 +631,225 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...project,
       id: Date.now().toString(),
     };
+    const prev = projects;
     setProjects([...projects, newProject]);
-    dataAdapter.addProject(newProject).then(res => { if (!res.ok) console.warn('[dataAdapter] addProject failed', res); }).catch(e => console.warn('[dataAdapter] addProject error', e));
+    (async () => { try { await BackendService.create('projects', newProject); } catch (err: any) { setProjects(prev); const m = (err && (err.serverMessage || err.message)) || 'Add project failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const updateProject = (id: string, updatedData: Partial<Project>) => {
+    const prev = projects;
     setProjects(projects.map(p => p.id === id ? { ...p, ...updatedData } : p));
-    dataAdapter.updateProject(id, updatedData as Partial<Project>).catch(e => console.warn('[dataAdapter] updateProject error', e));
+    (async () => { try { await BackendService.update('projects', id, updatedData); } catch (err: any) { setProjects(prev); const m = (err && (err.serverMessage || err.message)) || 'Update project failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   const deleteProject = (id: string) => {
+    const prev = projects;
     setProjects(projects.filter(p => p.id !== id));
-    dataAdapter.deleteProject(id).catch(e => console.warn('[dataAdapter] deleteProject error', e));
+    (async () => { try { await BackendService.remove('projects', id); } catch (err: any) { setProjects(prev); const m = (err && (err.serverMessage || err.message)) || 'Delete project failed'; setConnectionError(m.toString()); toast.error(m.toString()); } })();
   };
 
   // Formulation CRUD
+  function validateFormulationShape(f: Formulation) {
+    if (!f) return false;
+    if (!f.name || !f.code || !f.product || !f.version) return false;
+    if (!Array.isArray(f.ingredients)) return false;
+    for (const ing of f.ingredients) {
+      if (!ing.name || typeof ing.quantity !== 'number' || !ing.unit) return false;
+    }
+    return true;
+  }
+
   const addFormulation = (formulation: Omit<Formulation, 'id'>) => {
     const newFormulation: Formulation = {
       ...formulation,
       id: Date.now().toString(),
     };
+    const prev = formulations;
     setFormulations([...formulations, newFormulation]);
-    dataAdapter.addFormulation(newFormulation).then(res => { if (!res.ok) console.warn('[dataAdapter] addFormulation failed', res); }).catch(e => console.warn('[dataAdapter] addFormulation error', e));
+    (async () => {
+      try {
+        if (!validateFormulationShape(newFormulation)) throw Object.assign(new Error('Invalid formulation shape'), { code: 'SCHEMA_VALIDATION' });
+        await BackendService.create('formulations', newFormulation);
+        setLastSyncTime(new Date().toISOString());
+      } catch (err: any) {
+        setFormulations(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Add formulation failed';
+        setConnectionError(m.toString());
+        toast.error(`${err?.code || 'ERROR'}: ${m}`);
+      } finally {
+        // no-op cleanup
+      }
+    })();
   };
 
-  const updateFormulation = (id: string, updatedData: Partial<Formulation>) => {
+  const updateFormulation = async (id: string, updatedData: Partial<Formulation>) => {
+    const prev = formulations;
     setFormulations(formulations.map(f => f.id === id ? { ...f, ...updatedData } : f));
-    dataAdapter.updateFormulation(id, updatedData as Partial<Formulation>).catch(e => console.warn('[dataAdapter] updateFormulation error', e));
+    try {
+      // version check: fetch backend version
+      const backend = await BackendService.get('formulations', id);
+      const backendVersion = backend?.version || (backend?.data && backend.data.version) || null;
+      const local = formulations.find(f => f.id === id)?.version;
+      if (backendVersion && local && backendVersion !== local) {
+        throw Object.assign(new Error('Data Outdated: Please refresh before saving.'), { code: 'VERSION_MISMATCH' });
+      }
+      const merged = { ...(formulations.find(f => f.id === id) || {}), ...updatedData } as Formulation;
+      if (!validateFormulationShape(merged)) throw Object.assign(new Error('Invalid formulation shape'), { code: 'SCHEMA_VALIDATION' });
+      await BackendService.update('formulations', id, merged);
+      setLastSyncTime(new Date().toISOString());
+    } catch (err: any) {
+      setFormulations(prev);
+      const m = (err && (err.serverMessage || err.message)) || 'Update formulation failed';
+      setConnectionError(m.toString());
+      if (err && err.code === 'VERSION_MISMATCH') {
+        toast.error('Data Outdated: Please refresh before saving.');
+      } else {
+        toast.error(`${err?.code || 'ERROR'}: ${m}`);
+      }
+    } finally {
+      // cleanup if necessary
+    }
   };
 
   const deleteFormulation = (id: string) => {
+    const prev = formulations;
     setFormulations(formulations.filter(f => f.id !== id));
-    dataAdapter.deleteFormulation(id).catch(e => console.warn('[dataAdapter] deleteFormulation error', e));
+    (async () => {
+      try {
+        await BackendService.remove('formulations', id);
+        setLastSyncTime(new Date().toISOString());
+      } catch (err: any) {
+        setFormulations(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Delete formulation failed';
+        setConnectionError(m.toString());
+        toast.error(`${err?.code || 'ERROR'}: ${m}`);
+      } finally {
+        // no-op
+      }
+    })();
   };
 
   // BOM CRUD
+  function validateBOMShape(b: BOM) {
+    if (!b) return false;
+    if (!b.name || !b.code || !b.product || !b.version) return false;
+    if (!Array.isArray(b.components)) return false;
+    for (const c of b.components) {
+      if (!c.name || typeof c.quantity !== 'number' || !c.unit || typeof c.cost !== 'number') return false;
+    }
+    return true;
+  }
+
   const addBOM = (bom: Omit<BOM, 'id'>) => {
     const newBOM: BOM = {
       ...bom,
       id: Date.now().toString(),
     };
+    const prev = boms;
     setBOMs([...boms, newBOM]);
-    dataAdapter.addBOM(newBOM).then(res => { if (!res.ok) console.warn('[dataAdapter] addBOM failed', res); }).catch(e => console.warn('[dataAdapter] addBOM error', e));
+    (async () => {
+      try {
+        if (!validateBOMShape(newBOM)) throw Object.assign(new Error('Invalid BOM shape'), { code: 'SCHEMA_VALIDATION' });
+        await BackendService.create('boms', newBOM);
+        setLastSyncTime(new Date().toISOString());
+      } catch (err: any) {
+        setBOMs(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Add BOM failed';
+        setConnectionError(m.toString());
+        toast.error(`${err?.code || 'ERROR'}: ${m}`);
+      } finally {
+        // no-op
+      }
+    })();
   };
 
-  const updateBOM = (id: string, updatedData: Partial<BOM>) => {
+  const updateBOM = async (id: string, updatedData: Partial<BOM>) => {
+    const prev = boms;
     setBOMs(boms.map(b => b.id === id ? { ...b, ...updatedData } : b));
-    dataAdapter.updateBOM(id, updatedData as Partial<BOM>).catch(e => console.warn('[dataAdapter] updateBOM error', e));
+    try {
+      const backend = await BackendService.get('boms', id);
+      const backendVersion = backend?.version || (backend?.data && backend.data.version) || null;
+      const local = boms.find(b => b.id === id)?.version;
+      if (backendVersion && local && backendVersion !== local) {
+        throw Object.assign(new Error('Data Outdated: Please refresh before saving.'), { code: 'VERSION_MISMATCH' });
+      }
+      const merged = { ...(boms.find(b => b.id === id) || {}), ...updatedData } as BOM;
+      if (!validateBOMShape(merged)) throw Object.assign(new Error('Invalid BOM shape'), { code: 'SCHEMA_VALIDATION' });
+      await BackendService.update('boms', id, merged);
+      setLastSyncTime(new Date().toISOString());
+    } catch (err: any) {
+      setBOMs(prev);
+      const m = (err && (err.serverMessage || err.message)) || 'Update BOM failed';
+      setConnectionError(m.toString());
+      if (err && err.code === 'VERSION_MISMATCH') {
+        toast.error('Data Outdated: Please refresh before saving.');
+      } else {
+        toast.error(`${err?.code || 'ERROR'}: ${m}`);
+      }
+    } finally {
+      // cleanup
+    }
   };
 
   const deleteBOM = (id: string) => {
+    const prev = boms;
     setBOMs(boms.filter(b => b.id !== id));
-    dataAdapter.deleteBOM(id).catch(e => console.warn('[dataAdapter] deleteBOM error', e));
+    (async () => {
+      try {
+        await BackendService.remove('boms', id);
+        setLastSyncTime(new Date().toISOString());
+      } catch (err: any) {
+        setBOMs(prev);
+        const m = (err && (err.serverMessage || err.message)) || 'Delete BOM failed';
+        setConnectionError(m.toString());
+        toast.error(`${err?.code || 'ERROR'}: ${m}`);
+      } finally {
+        // no-op
+      }
+    })();
   };
+
+  // Fetch initial MDM registry from backend
+  async function fetchInitialData() {
+    try {
+      setConnectionError(null);
+      const data = await BackendService.getAll();
+      if (data && Array.isArray(data.entities)) {
+        // Simple mapping: if backend returned arrays we map to places we can
+        // Here we map entity list to BOMs as a placeholder for registry data
+        setBOMs(data.entities as any[]);
+      }
+      return true;
+    } catch (err: any) {
+      const m = (err && (err.serverMessage || err.message)) || 'Unable to reach backend';
+      setConnectionError(m.toString());
+      toast.error(m.toString());
+      return false;
+    }
+  }
+
+  // Commit a delta for a single entity
+  async function commitChanges(entityId: string, delta: any) {
+    if (connectionError) {
+      toast.error('Backend Unreachable');
+      return false;
+    }
+    setIsSyncing(true);
+    try {
+      const res = await BackendService.updateEntity(entityId, delta);
+      setLastSyncTime(new Date().toISOString());
+      setConnectionError(null);
+      toast.success('Saved');
+      return res;
+    } catch (err: any) {
+      const m = (err && (err.serverMessage || err.message)) || 'Save failed';
+      setConnectionError(m.toString());
+      toast.error(m.toString());
+      return false;
+    } finally {
+      setIsSyncing(false);
+    }
+  }
 
   return (
     <DataContext.Provider
@@ -630,6 +919,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
         updateFormulation,
         deleteFormulation,
         boms,
+        isSyncing,
+        lastSyncTime,
+        connectionError,
+        fetchInitialData,
+        commitChanges,
         addBOM,
         updateBOM,
         deleteBOM,
@@ -647,3 +941,6 @@ export function useData() {
   }
   return context;
 }
+
+// backward-compatible alias: some modules expect `useDataContext`
+export const useDataContext = useData;

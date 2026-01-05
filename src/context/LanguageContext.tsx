@@ -11,6 +11,7 @@ interface LanguageContextType {
 const translations: Record<Language, Record<string, string>> = {
   en: {
     // Navigation
+    'nav.admin': 'Admin Control',
     'nav.dashboard': 'Dashboard',
     'nav.analytics': 'Analytics',
     'nav.crm': 'CRM',
@@ -77,6 +78,7 @@ const translations: Record<Language, Record<string, string>> = {
     'status.rejected': 'Rejected',
   },
   fa: {
+    'nav.admin': 'کنترل مدیریت',
     // Navigation
     'nav.dashboard': 'داشبورد',
     'nav.analytics': 'تحلیل و گزارش',

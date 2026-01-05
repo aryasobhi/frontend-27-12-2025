@@ -2,6 +2,8 @@ import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Users, ShoppingCart, TrendingUp, DollarSign, Activity, Package, Download, RefreshCw } from 'lucide-react';
 import { KPICard } from '../components/KPICard';
+import BackendService from '../api/services';
+import { useEffect, useState } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useTranslation, toPersianNumber, formatRelativeTime } from '../lib/i18n';
 
@@ -65,9 +67,35 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 // ============================================
 export function Dashboard() {
   const { t } = useTranslation();
+  const [snapshot, setSnapshot] = useState<any>(null);
+  const [offline, setOffline] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const s = await BackendService.getSystemSnapshot();
+        if (!mounted) return;
+        setSnapshot(s);
+        setOffline(false);
+      } catch (e) {
+        if (!mounted) return;
+        setOffline(true);
+      }
+    })();
+    const id = setInterval(async () => {
+      try {
+        await BackendService.ping();
+        setOffline(false);
+      } catch (e) {
+        setOffline(true);
+      }
+    }, 30000);
+    return () => { mounted = false; clearInterval(id); };
+  }, []);
 
   return (
-    <div className="p-6 space-y-6 min-h-screen bg-transparent text-rosary font-vazir" dir="rtl">
+    <div className={`p-6 space-y-6 min-h-screen bg-transparent text-rosary font-vazir ${offline ? 'filter grayscale' : ''}`} dir="rtl">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -95,33 +123,39 @@ export function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <KPICard
           title={t('dashboard.kpi.totalProduction')}
-          value={toPersianNumber('12,450')}
-          change={12.5}
+          value={toPersianNumber((snapshot?.totalProduction ?? '—').toString())}
+          change={snapshot?.productionChange ?? 0}
           icon={Package}
           iconColor="text-gold"
         />
         <KPICard
           title={t('dashboard.kpi.activeOrders')}
-          value={toPersianNumber('45')}
-          change={-2.4}
+          value={toPersianNumber((snapshot?.activeOrders ?? '—').toString())}
+          change={snapshot?.ordersChange ?? 0}
           icon={ShoppingCart}
           iconColor="text-gold"
         />
         <KPICard
           title={t('dashboard.kpi.efficiency')}
-          value={`${toPersianNumber('94.2')}٪`}
-          change={1.8}
+          value={`${toPersianNumber((snapshot?.efficiency ?? '—').toString())}٪`}
+          change={snapshot?.efficiencyChange ?? 0}
           icon={Activity}
           iconColor="text-gold"
         />
         <KPICard
           title={t('dashboard.kpi.revenue')}
-          value={`${toPersianNumber('1.2')}M تومان`}
-          change={8.1}
+          value={`${toPersianNumber((snapshot?.revenueDisplay ?? '—').toString())}`}
+          change={snapshot?.revenueChange ?? 0}
           icon={DollarSign}
           iconColor="text-gold"
         />
       </div>
+
+      {offline && (
+        <div className="fixed inset-0 pointer-events-none flex items-start justify-center p-8">
+          <div className="bg-black/30 text-white/30 px-6 py-2 rounded-lg text-sm font-bold backdrop-blur-sm">OFFLINE — Rust engine unreachable</div>
+        </div>
+      )}
 
       {/* Partner Distribution & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

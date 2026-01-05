@@ -16,7 +16,8 @@ import { Machines } from './components/Machines';
 import { BOM } from './components/BOM';
 import { Formulation } from './components/Formulation';
 import { Projects } from './components/Projects';
-import MDMRegistry from './pages/ModuleBuilder';
+import AdminControlPanel from './pages/AdminControlPanel';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import { DynamicModuleLoader } from './components/DynamicModuleLoader';
 // New page imports
 import { ProductListPage } from './pages/ProductListPage';
@@ -149,8 +150,8 @@ export default function App() {
         return <Dashboard />;
       case 'analytics':
         return <Analytics />;
-      case 'builder':
-        return <MDMRegistry />;
+      case 'admin':
+        return <AdminControlPanel />;
       default:
         // Attempt to load as a dynamic module if no specialized view exists
         return <DynamicModuleLoader moduleId={activeView} />;
@@ -165,7 +166,7 @@ export default function App() {
             <div className="min-h-full text-rosary type-body" dir="rtl">
               <Routes>
                 <Route path="/" element={<Dashboard />} />
-                <Route path="/builder" element={<MDMRegistry />} />
+                <Route path="/admin" element={<ProtectedRoute requiredRole="ADMIN"><AdminControlPanel /></ProtectedRoute>} />
                 <Route path="/:moduleId" element={<DynamicModuleLoaderProxy />} />
                 <Route path="*" element={renderView()} />
               </Routes>
